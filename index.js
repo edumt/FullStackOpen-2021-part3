@@ -50,6 +50,17 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons", (request, response) => {
   const person = { id: generateID(), ...request.body };
+  if (!(person.name && person.number)) {
+    return response
+      .status(400)
+      .send({ error: "The name or number is missing." });
+  }
+
+  if (persons.some((_person) => _person.name === person.name)) {
+    return response
+      .status(409)
+      .send({ error: "The name already exists in the phonebook." });
+  }
   persons = [...persons, person];
   response.status(204).end();
 });
