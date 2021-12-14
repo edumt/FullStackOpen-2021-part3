@@ -1,7 +1,9 @@
+const morgan = require("morgan");
 const express = require("express");
 const app = express();
 
 app.use(express.json());
+app.use(morgan("tiny"));
 
 let persons = [
   {
@@ -44,7 +46,9 @@ app.get("/api/persons/:id", (request, response) => {
   if (person) {
     response.json(person);
   } else {
-    response.status(404).end();
+    response.status(404).send({
+      error: `The provided id (${request.params.id}) doesn't have any matches in the phonebook.`,
+    });
   }
 });
 
@@ -62,7 +66,7 @@ app.post("/api/persons", (request, response) => {
       .send({ error: "The name already exists in the phonebook." });
   }
   persons = [...persons, person];
-  response.status(204).end();
+  response.json(person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
