@@ -40,8 +40,6 @@ let persons = [
   },
 ];
 
-const generateID = () => Math.floor(Math.random() * 1e9);
-
 app.get("/info", (request, response) => {
   response.send(
     `<p>Phonebook has info for ${persons.length} people</p>
@@ -67,20 +65,22 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
-  const person = { id: generateID(), ...request.body };
-  if (!(person.name && person.number)) {
+  if (!(request.body.name && request.body.number)) {
     return response
       .status(400)
       .send({ error: "The name or number is missing." });
   }
 
-  if (persons.some((_person) => _person.name === person.name)) {
+  const person = new Person({ ...request.body });
+  /* if (persons.some((_person) => _person.name === person.name)) {
     return response
       .status(409)
       .send({ error: "The name already exists in the phonebook." });
-  }
-  persons = [...persons, person];
-  response.json(person);
+  } */
+
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
