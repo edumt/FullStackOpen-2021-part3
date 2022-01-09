@@ -54,14 +54,20 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const person = persons.find((p) => p.id === +request.params.id);
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).send({
-      error: `The provided id (${request.params.id}) doesn't have any matches in the phonebook.`,
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).send({
+          error: `The provided id (${request.params.id}) doesn't have any matches in the phonebook.`,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      response.status(400).send({ error: "malformatted id" });
     });
-  }
 });
 
 app.post("/api/persons", (request, response) => {
