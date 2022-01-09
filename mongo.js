@@ -11,18 +11,18 @@ const password = process.argv[2];
 const url = `mongodb+srv://fullstack:${password}@cluster0.ublay.mongodb.net/phonebook?retryWrites=true`;
 mongoose.connect(url);
 
-const entrySchema = new mongoose.Schema({
+const personSchema = new mongoose.Schema({
   name: String,
   number: String,
 });
 
-const Entry = mongoose.model("Entry", entrySchema);
+const Person = mongoose.model("Person", personSchema);
 
 if (process.argv.length === 3) {
-  Entry.find({}).then((result) => {
+  Person.find({}).then((result) => {
     console.log("phonebook:");
-    result.forEach((entry) => {
-      console.log(entry.name, entry.number);
+    result.forEach((person) => {
+      console.log(person.name, person.number);
     });
     mongoose.connection.close();
   });
@@ -30,12 +30,12 @@ if (process.argv.length === 3) {
   const name = process.argv[3];
   const number = process.argv[4];
 
-  const entry = new Entry({
+  const person = new Person({
     name: name,
     number: number,
   });
 
-  entry.save().then((result) => {
+  person.save().then((result) => {
     console.log(`added ${name} number ${number} to phonebook`);
     mongoose.connection.close();
   });
